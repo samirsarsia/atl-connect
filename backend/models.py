@@ -11,4 +11,5 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     reply: str
-    resources_cited: list = []
+    resources_cited: list = []       # RAG resource names (have lat/lng in DB)
+    live_resources: list = []        # Serper results with addresses (need geocoding)

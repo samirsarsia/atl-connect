@@ -56,12 +56,14 @@ def chat(req: ChatRequest):
     # 4 — Format live search context
     live_context = ""
     if live_results:
-        live_context = "\n\n**Real-time search results:**\n" + "\n\n".join(
+        live_context = "\n\n**Real-time search results (live Google data):**\n" + "\n\n".join(
             f"- **{r.get('title', '')}**"
             + (f"\n  Address: {r['address']}" if r.get("address") else "")
             + (f"\n  Phone: {r['phone']}" if r.get("phone") else "")
+            + (f"\n  Hours: {r['hours']}" if r.get("hours") else "")
+            + (f"\n  Rating: {r['rating']}" if r.get("rating") else "")
             + (f"\n  {r.get('snippet', '')}" if r.get("snippet") else "")
-            + (f"\n  Link: {r['link']}" if r.get("link") else "")
+            + (f"\n  Website: {r['link']}" if r.get("link") else "")
             for r in live_results
         )
 
@@ -79,13 +81,13 @@ def chat(req: ChatRequest):
         "content": (
             f"User's question: {req.message}\n\n"
             f"{location_line}"
-            f"Here are the relevant Atlanta community resources I found:\n\n"
-            f"{resource_context}"
+            f"**Verified local database resources:**\n\n"
+            f"{resource_context if resource_context else '(none matched)'}"
             f"{live_context}\n\n"
-            f"Use the resources above to give the best answer. "
-            f"For any address you mention, format it as a Google Maps hyperlink: "
+            f"Use both the local database AND the real-time search results above to give the best answer. "
+            f"Format every address as a Google Maps hyperlink: "
             f"[Full Address](https://www.google.com/maps/search/?api=1&query=Full+Address+Atlanta+GA). "
-            f"Do not invent resources not listed above."
+            f"For real-time results without full details, link to their website so the user can verify."
         ),
     })
 
@@ -101,10 +103,32 @@ def chat(req: ChatRequest):
 
     reply = response.choices[0].message.content
 
+    # Collect live results that have an address for map geocoding
+    live_resources = [
+        {"name": r.get("title", ""), "address": r["address"]}
+        for r in live_results
+        if r.get("address")
+    ]
+
     return ChatResponse(
         reply=reply,
         resources_cited=[r["name"] for r in relevant_resources],
+        live_resources=live_resources,
     )
+
+
+@app.get("/resources/by-names")
+def resources_by_names(names: str = ""):
+    """Return full resource objects (with lat/lng) for a comma-separated list of names."""
+    if not names:
+        return {"resources": []}
+    name_list = [n.strip() for n in names.split(",") if n.strip()]
+    all_resources = get_all_resources()
+    matched = [
+        r for r in all_resources
+        if r.get("name") in name_list
+    ]
+    return {"resources": matched}
 
 
 @app.get("/resources")
