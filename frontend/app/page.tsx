@@ -17,8 +17,8 @@ function distanceKm(lat1: number, lng1: number, lat2: number, lng2: number) {
   const a =
     Math.sin(dLat / 2) ** 2 +
     Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLng / 2) ** 2;
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLng / 2) ** 2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
@@ -108,16 +108,17 @@ export default function Home() {
   return (
     <Box
       sx={{
+        position: "relative",
         display: "flex",
         flexDirection: "row",
         height: "100vh",
         width: "100%",
-        bgcolor: "#111318",
+        bgcolor: "#ffffff",
         overflow: "hidden",
       }}
     >
       {/* Left — Map */}
-      <Box sx={{ width: 380, flexShrink: 0, borderRight: "1px solid #1e2130", height: "100%" }}>
+      <Box sx={{ position: "absolute", width: "35%", flexShrink: 0, border: 0, height: "100%", zIndex: 0 }}>
         <MapSection
           userLat={location?.lat ?? null}
           userLng={location?.lng ?? null}
@@ -126,7 +127,7 @@ export default function Home() {
       </Box>
 
       {/* Right — Chat */}
-      <Box sx={{ flex: 1, minWidth: 0, height: "100%" }}>
+      <Box sx={{ position: "absolute", flex: 1, minWidth: 0, height: "100%", zIndex: 1, right: 0, width: "65%" }}>
         <ChatPanel
           userLat={location?.lat ?? null}
           userLng={location?.lng ?? null}
