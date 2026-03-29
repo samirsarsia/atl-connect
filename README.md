@@ -348,8 +348,8 @@ Built with ❤️ at **Hacklanta 2026** — Georgia State University's first-eve
 | Name | Role |
 |---|---|
 | **Samir Sarsia** | Backend / AI / RAG Pipeline / Frontend |
-| **David** | Data Research / Resource Verification |
-| **Clive** | Frontend / UX / Demo |
+| **David Valdez** | Data Research / Resource Verification |
+| **Clarence Li** | Frontend / UX / Demo |
 
 ---
 
